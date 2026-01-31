@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abdellah AI</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        .header { background: #007bff; color: white; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 5px 0 0; font-size: 12px; opacity: 0.9; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 16px; line-height: 1.4; }
+        .user-msg { align-self: flex-end; background-color: #007bff; color: white; border-bottom-right-radius: 2px; }
+        .ai-msg { align-self: flex-start; background-color: #e4e6eb; color: #050505; border-bottom-left-radius: 2px; }
+        .input-area { background: white; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ddd; }
+        input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 25px; outline: none; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Abdellah AI Bot</h1>
+    <p>Powered by Ould Belkacem Abdellah</p>
+</div>
+
+<div id="chat-container">
+    <div class="message ai-msg">Hello! I am Abdellah AI. How can I help you today?</div>
+</div>
+
+<div class="input-area">
+    <input type="text" id="userInput" placeholder="Ask me anything...">
+    <button onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const container = document.getElementById('chat-container');
+        const text = input.value.trim();
+
+        if (!text) return;
+
+        // إضافة رسالة المستخدم للواجهة
+        appendMessage(text, 'user-msg');
+        input.value = '';
+
+        // هنا نقوم بمحاكاة رد الذكاء الاصطناعي (يمكن ربطه بـ API لاحقاً)
+        setTimeout(() => {
+            const aiResponse = "As Abdellah AI, I'm currently being programmed. Soon I will be connected to a real brain!";
+            appendMessage(aiResponse, 'ai-msg');
+        }, 1000);
+    }
+
+    function appendMessage(text, className) {
+        const container = document.getElementById('chat-container');
+        const div = document.createElement('div');
+        div.className = `message ${className}`;
+        div.textContent = text;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
