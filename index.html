@@ -76,13 +76,17 @@
             });
 
             const data = await response.json();
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            appendMessage(aiResponse, 'ai-msg');
+            
+            if (data.error) {
+                appendMessage("خطأ من جوجل: " + data.error.message, 'ai-msg');
+            } else {
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                appendMessage(aiResponse, 'ai-msg');
+            }
 
         } catch (error) {
-            appendMessage("عذراً، يبدو أن هناك مشكلة في الاتصال. تأكد من مفتاح API الخاص بك!", 'ai-msg');
+            appendMessage("فشل الاتصال بالخادم، جرب تحديث الصفحة.", 'ai-msg');
         }
-    }
 
     function appendMessage(text, className) {
         const container = document.getElementById('chat-container');
