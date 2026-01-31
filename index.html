@@ -35,12 +35,13 @@
 
 <script>
     // هذه الوظيفة تطلب المفتاح وتخزنه في المتصفح فقط
-    function getApiKey() {
-        let key = localStorage.getItem('abdou_gpt_key');
-        if (!key || key === "null") {
-            key = prompt("Welcome Abdellah! Please paste your NEW Gemini API Key here:");
+        function getApiKey() {
+        // قمنا بتغيير الاسم إلى abdou_key_final لضمان ظهور النافذة
+        let key = localStorage.getItem('abdou_key_final');
+        if (!key || key === "null" || key.length < 10) {
+            key = prompt("Welcome Abdellah! 🚀\nPlease paste your NEW Gemini API Key here:");
             if (key) {
-                localStorage.setItem('abdou_gpt_key', key);
+                localStorage.setItem('abdou_key_final', key);
             }
         }
         return key;
