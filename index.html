@@ -10,7 +10,6 @@
         .header h1 { margin: 0; font-size: 26px; color: #007bff; }
         #chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: #0b111a; }
         .message { max-width: 80%; padding: 12px 18px; border-radius: 20px; font-size: 16px; line-height: 1.6; word-wrap: break-word; }
-        /* التنسيق التلقائي للرسائل */
         .user-msg { align-self: flex-end; background: #007bff; color: white; border-bottom-right-radius: 2px; text-align: right; }
         .ai-msg { align-self: flex-start; background: #232d3d; color: #e9ecef; border-bottom-left-radius: 2px; border: 1px solid #374151; text-align: left; }
         .input-area { background: #161d29; padding: 20px; display: flex; gap: 12px; border-top: 1px solid #374151; }
@@ -26,7 +25,7 @@
 </div>
 
 <div id="chat-container">
-    <div class="message ai-msg">Hi! I can speak many languages. Try talking to me in English, Arabic, or French!</div>
+    <div class="message ai-msg">Hi! I am ready. Please make sure you entered your API Key in the popup window.</div>
 </div>
 
 <div class="input-area">
@@ -35,24 +34,36 @@
 </div>
 
 <script>
-    let API_KEY = localStorage.getItem('gemini_api_key');
-    if (!API_KEY) {
-        API_KEY = prompt("Please enter your Gemini API Key:");
-        if (API_KEY) localStorage.setItem('gemini_api_key', API_KEY);
+    // هذه الوظيفة تطلب المفتاح وتخزنه في المتصفح فقط
+    function getApiKey() {
+        let key = localStorage.getItem('abdou_gpt_key');
+        if (!key || key === "null") {
+            key = prompt("Welcome Abdellah! Please paste your NEW Gemini API Key here:");
+            if (key) {
+                localStorage.setItem('abdou_gpt_key', key);
+            }
+        }
+        return key;
     }
 
+    let API_KEY = getApiKey();
+
     const systemPrompt = `
-        You are "Abdou-gpt", a multilingual AI assistant created by Ould Belkacem Abdellah (15 years old, from Ain El Hammam, Algeria).
-        Instruction: Always reply to the user in the SAME language they use to talk to you.
-        - If they speak Arabic, answer in Arabic.
-        - If they speak French, answer in French.
-        - If they ask about your creator, tell them about Abdellah in the language they used.
+        You are "Abdou-gpt", created by Ould Belkacem Abdellah (15 years old, Algeria).
+        Reply in the same language as the user.
     `;
 
     async function sendMessage() {
         const input = document.getElementById('userInput');
         const text = input.value.trim();
-        if (!text || !API_KEY) return;
+        
+        // إعادة طلب المفتاح إذا كان فارغاً
+        if (!API_KEY) {
+            API_KEY = getApiKey();
+            if (!API_KEY) return;
+        }
+
+        if (!text) return;
 
         appendMessage(text, 'user-msg');
         input.value = '';
@@ -67,11 +78,19 @@
             });
 
             const data = await response.json();
-            const aiResponse = data.candidates[0].content.parts[0].text;
-            appendMessage(aiResponse, 'ai-msg');
+
+            if (data.error) {
+                // إذا كان المفتاح خاطئاً، نحذفه لكي يطلبه الموقع مرة أخرى عند التحديث
+                localStorage.removeItem('abdou_gpt_key');
+                appendMessage("API Key Error. The page will reload, please enter a valid key.", 'ai-msg');
+                setTimeout(() => location.reload(), 3000);
+            } else {
+                const aiResponse = data.candidates[0].content.parts[0].text;
+                appendMessage(aiResponse, 'ai-msg');
+            }
 
         } catch (error) {
-            appendMessage("Error: Check your API Key or Internet.", 'ai-msg');
+            appendMessage("Connection error. Try again.", 'ai-msg');
         }
     }
 
@@ -81,8 +100,7 @@
         div.className = `message ${className}`;
         div.innerText = text;
         
-        // ذكاء بسيط لتحديد اتجاه النص
-        if (containsArabic(text)) {
+        if (/[\u0600-\u06FF]/.test(text)) {
             div.style.direction = "rtl";
             div.style.textAlign = "right";
         } else {
@@ -92,10 +110,6 @@
 
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
-    }
-
-    function containsArabic(text) {
-        return /[\u0600-\u06FF]/.test(text);
     }
 </script>
 
